@@ -1,65 +1,65 @@
 import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Link from 'next/link'
+import Table from '../../trial/components/table'
+import Layout from '../../trial/components/layout'
+import Header from '../../trial/components/header'
+import Main from '../../trial/components/main'
+import Sidebar from '../../trial/components/sidebar'
+import Footer from '../../trial/components/footer'
+import { getData } from '../../trial/lib/data'
+import styles from '../styles/header.module.css'
+import { useRouter } from 'next/router'
 
-export default function Home() {
-  return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+export default function Home({ data }) {
+  const router = useRouter();
+  const handleClick = (e) => {
+    e.preventDefault()
+    router.push(href)
+  }
+  return(
+    <Layout home>
+        <Head>
+          <title>Payments Management</title>
+        </Head>
+        <Header>
+        </Header>
+        <Main>
+        <Sidebar></Sidebar>
+        <Table children>
+        {data.map(({id,status,amount_settled,customer,meta,amount,app_fee,created_at})=>(
+        <tr>
+          <td>{id}</td>
+          <td>{status}</td>
+          <td>{customer["phone_number"]}</td>
+          <td>{meta["mpesa_receipt_number"]}</td>
+          <td>{customer["name"]}</td>
+          <td>{amount}</td>
+          <td>{amount_settled}</td>
+          <td>{app_fee}</td>
+          <td>{created_at}</td>
+          <td><Link  href={{
+              pathname: '/single-pay/',
+              query: { id: 12 },
+            }}>Edit</Link></td>
+        </tr>
+        ))}
+        </Table>
+        </Main>
+        <Footer></Footer>
+    </Layout> 
   )
 }
+
+export async function getServerSideProps(context) {
+  const data = getData();
+
+  return{
+      props:{
+          data
+      }
+  }
+}
+
